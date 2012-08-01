@@ -51,20 +51,15 @@
     <script src="/static/raphael.js" type="text/javascript" charset="utf-8"></script>
     <script src="/static/jquery.js" type="text/javascript" charset="utf-8"></script>
     <script src="/static/map.js" type="text/javascript" charset="utf-8"></script>
+	<script src="http://s.jdiez.me:8082/socket.io/socket.io.js"></script>
     <script src="/static/bootstrap/js/bootstrap.js" type="text/javascript" charset="utf-8"></script>
     <script type="text/javascript">
         var sites = {},
             edit_mode = false,
             add_sites_list = [],
-            ws = new WebSocket("ws://127.0.0.1:8888/track");
+            ws = io.connect("ws://s.jdiez.me:8082");
 
-        ws.onopen = function() {
-            console.log("Connected...");
-        }
-        ws.onmessage = function(event) {
-            console.log(event.data);
-            var data = JSON.parse(event.data);
-            console.log(data);
+        ws.on('data', function(data) {
             try{
                 paint(data.site, data.color);
                 $('#last_messages').prepend('<li><b>'+data.user+' ('+data.site+')</b>: ' + data.message + '</li>');
@@ -72,10 +67,7 @@
             catch(e){
                 console.log('Wrong site ' + data.site);
             }
-        }
-        ws.onclose = function() {
-            console.log("Closed");
-        }
+        });
     </script>
 
     </body>
